@@ -1,0 +1,43 @@
+<!doctype html>
+
+<html>
+
+<head>
+  <style>
+    .display {
+      display: inline-block;
+      width: 90px;
+      height: 30px;
+      background-color: lightgray;
+      border: 1px solid gray;
+      font-size: 30px;
+      margin-bottom: 20px;
+    }    
+    </style>
+	<title>Line Chart</title>
+	<link rel="stylesheet" href="./chartist.min.css">
+</head>
+
+<body style="display: flex">
+  <div style="width: 80%;"">
+	  <div id="tchart" class="ct-chart ct-golden-section"></div>	
+	  <div id="pchart"  class="ct-chart ct-golden-section"></div>
+  </div>
+  <div>
+		Ports <select name="ports" id="ports"></select><br><br>
+    <button id="start" disabled >Start</button>&nbsp;
+    <button id="stop" disabled>Stop</button>
+    <br><br>    
+    Temp1<br>
+    <span class="display" id="temp1"></span><br>
+    Temp2<br>
+    <span class="display" id="temp2"></span><br>
+    Temp3<br>
+    <span class="display" id="temp3"></span><br>
+    Pressure<br>
+    <span class="display" id="press"></span><br>
+	</div>
+	<script src="./simple-line-chart.js"></script>
+</body>
+
+</html>

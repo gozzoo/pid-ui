@@ -1,0 +1,20 @@
+{
+  "name": "pid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "electron": "^9.1.1",
+    "serialport": "^9.0.0"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.11.0"
+  },
+  "scripts": {
+    "install": "electron-rebuild",
+    "start": "electron .",
+    "rebuild": "electron-rebuild"
+  },
+  "author": "Evgeni Milev",
+  "license": "ISC"
+}
