@@ -75,7 +75,7 @@ function nextValue() {
   pchart.update();
 }
 
-var startButton, stopButton, portsSelect
+var startButton, stopButton, portsSelect, haatButton
 var temp1Display, temp2Display, temp3Display, pressDisplay
 
 window.onload = () => {
@@ -84,6 +84,9 @@ window.onload = () => {
   portsSelect = document.getElementById('ports')
   startButton.addEventListener('click', startDisplay)
   stopButton.addEventListener('click', stopDisplay)
+
+  haatButton = document.getElementById('heat')
+  haatButton.addEventListener('click', heat)
   
   temp1Display = document.getElementById('temp1')
   temp2Display = document.getElementById('temp2')
@@ -109,9 +112,19 @@ function updatePorts(ports) {
   ports.unshift('...')
   var listener = portsSelect.addEventListener('change', event => {
     let com =  portsSelect.value    
-    if (com != '...')  {
+    if (com == '...')  {
+      if (serialport) {
+        serialport.close()
+        serialport = undefined
+      }
+      startButton.disabled = true
+      stopButton.disabled = true
+      haatButton.disabled = true
+      displayValues(['', '', '', ''])     
+    } else {
       initPort(com)
       startButton.disabled = false
+      haatButton.disabled = false
     }
   })
   console.log('listener', listener)
@@ -128,29 +141,37 @@ var serialport
 let t1, t2, t3, p
 
 function initPort(com) {
-  if (serialport) 
-    serialport.close()  
+  if (serialport)
+    serialport.close()
   serialport = new SerialPort(com, {baudRate: 115200})
 
-  let re = /(.*) (.*) (.*) (.*)/
+  let re = /([\d.]+)/g
 
   const text = serialport.pipe(new Readline())
   text.on('data', (data) => {
-    // data = '-101.1 32.8 31.4 8.0'
-    let values = re.exec(data)
-    if (values) {
-      t1 = values[1]
-      t2 = values[2]
-      t3 = values[3]
-      p = values[4]
-
-      temp1Display.textContent = t1
-      temp2Display.textContent = t2
-      temp3Display.textContent = t3
-      pressDisplay.textContent = p
-    } else 
+    console.log('data', data)
+    let values = []
+    var matches
+    while(matches = re.exec(data))
+      values.push(matches[1])
+    console.log('values', values)
+    if (values) 
+      displayValues(values)
+    else 
       console.error('data format error')
   })
+}
+
+function displayValues(values) {
+  t1 = values[0]
+  t2 = values[1]
+  t3 = values[2]
+  p = values[3]
+
+  temp1Display.textContent = t1
+  temp2Display.textContent = t2
+  temp3Display.textContent = t3
+  pressDisplay.textContent = p
 }
 
 function startDisplay() {
@@ -173,4 +194,14 @@ function stopDisplay() {
     stopButton.disabled = true
     portsSelect.disabled = false
   }
+}
+
+var heating = false
+function heat() {
+  heating = !heating
+  let command = heating ? 't1\n' : 't0\n'
+  serialport.write(command)
+
+  let color = heating ? 'red' : ''
+  haatButton.style['background-color'] = color
 }

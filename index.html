@@ -12,8 +12,18 @@
       border: 1px solid gray;
       font-size: 30px;
       margin-bottom: 20px;
-    }    
-    </style>
+    }
+    #heat {
+      color: black;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 20px;
+      margin: 4px 2px;
+      cursor: pointer;
+  }
+  </style>
 	<title>Line Chart</title>
 	<link rel="stylesheet" href="./chartist.min.css">
 </head>
@@ -36,6 +46,7 @@
     <span class="display" id="temp3"></span><br>
     Pressure<br>
     <span class="display" id="press"></span><br>
+    <button id="heat" disabled>Heat</button>&nbsp;
 	</div>
 	<script src="./simple-line-chart.js"></script>
 </body>
