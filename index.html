@@ -13,7 +13,10 @@
       font-size: 30px;
       margin-bottom: 20px;
     }
-    #heat {
+    #relay {
+      width: 45px;
+    }
+    #heat1, #heat2 {
       color: black;
       padding: 10px 20px;
       text-align: center;
@@ -22,7 +25,21 @@
       font-size: 20px;
       margin: 4px 2px;
       cursor: pointer;
-  }
+    }
+    .params {
+      margin-top: 20px;
+    }
+    .params input {
+      width: 50px;
+      margin: 5px;
+    }
+    .params label {
+      width: 25px;
+      display: inline-block;
+    }
+    .params button {
+      width: 40px;
+    }
   </style>
 	<title>Line Chart</title>
 	<link rel="stylesheet" href="./chartist.min.css">
@@ -34,9 +51,9 @@
 	  <div id="pchart"  class="ct-chart ct-golden-section"></div>
   </div>
   <div>
-		Ports <select name="ports" id="ports"></select><br><br>
-    <button id="start" disabled >Start</button>&nbsp;
-    <button id="stop" disabled>Stop</button>
+		Ports <select id="ports"></select><br><br>
+    <button id="start" >Start</button>&nbsp;
+    <button id="stop">Stop</button>
     <br><br>    
     Temp1<br>
     <span class="display" id="temp1"></span><br>
@@ -46,7 +63,19 @@
     <span class="display" id="temp3"></span><br>
     Pressure<br>
     <span class="display" id="press"></span><br>
-    <button id="heat" disabled>Heat</button>&nbsp;
+    <button id="heat1">Heat1</button>&nbsp;<br>
+    <button id="heat2">Heat2</button>&nbsp;
+    <div class="params">
+      Relay <select id="relay">
+        <option value="0">0</option>
+        <option value="1">1</option>
+      </select><br><br>
+      <label>P</label><input id="p"><br>
+      <label>I</label><input id="i"><br>
+      <label>D</label><input id="d"><br>
+      <label>TT</label><input id="tt">
+      <button id="set_params">Set</button>
+    </div>
 	</div>
 	<script src="./simple-line-chart.js"></script>
 </body>
