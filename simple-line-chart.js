@@ -128,15 +128,19 @@ function initPorts() {
   })
 }
 
+function closePort() {
+  if (serialport && serialport.isOpen) {
+    serialport.close()
+    serialport = undefined
+  }
+}
+
 function updatePorts(ports) {
   ports.unshift('...')
   portsSelect.addEventListener('change', event => {
     let com =  event.target.value
     if (com == '...')  {
-      if (serialport && serialport.isOpen) {
-        serialport.close()
-        serialport = undefined
-      }
+      closePort()
       disableInputs(true)
       displayValues(['', '', '', ''])     
     } else {
@@ -173,35 +177,36 @@ function initPort(com) {
     serialport.close()
   serialport = new SerialPort(com, {baudRate: 115200, parity: 'none', stopBits: 1})
   serialport.on('error', err => console.error(err))
-
-  let re = /([\d.]+)/g
-
   const text = serialport.pipe(new Readline())
-  text.on('data', (data) => {
-    //console.log(data)
-    var ch = data.charAt(0);
-    if (ch != '#') {
-      console.log('>> ', data)
-      return
-    }
-    let values = []
-    var matches
-    while(matches = re.exec(data))
-      values.push(matches[1])
-    //console.log('values', values)
-    if (values) 
-      displayValues(values)
-    else 
-      console.error('data format error')
-    
-    heating1 = values[4]
-    let color = heating1 == '1' ? 'red' : ''
-    haat1Button.style['background-color'] = color
+  text.on('data', onData)
+}
 
-    heating2 = values[5]
-    color = heating2 == '1' ? 'red' : ''
-    haat2Button.style['background-color'] = color
-  })
+function onData(data) {
+  //console.log(data)
+  var ch = data.charAt(0);
+  if (ch != '#') {
+    console.log('>> ', data)
+    return
+  }
+
+  let values = []
+  var matches
+  let re = /([\d.]+)/g
+  while(matches = re.exec(data))
+    values.push(matches[1])
+  //console.log('values', values)
+  if (values) 
+    displayValues(values)
+  else 
+    console.error('data format error')
+  
+  heating1 = values[4]
+  let color = heating1 == '1' ? 'red' : ''
+  haat1Button.style['background-color'] = color
+
+  heating2 = values[5]
+  color = heating2 == '1' ? 'red' : ''
+  haat2Button.style['background-color'] = color    
 }
 
 function displayValues(values) {
