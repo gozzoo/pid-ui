@@ -5,6 +5,10 @@ var temp2 = []
 var press = []
 var labels = range(0, 300, 10)
 
+function initLabels() {
+  range(0, 300, 10)
+}
+
 function range(from, to, step) {
   step = step || 1  
   var result = []
@@ -49,15 +53,6 @@ var pchart = new Chartist.Line('#pchart', {
     right: 40
   }
 });
-
-var timerId 
-
-function start() {
-  if (!timerId) {
-    nextValue()
-    timerId = setInterval(nextValue, 5000);
-  }
-}
 
 function nextValue() {
   if (temp1.length == 61) {
@@ -142,7 +137,7 @@ function updatePorts(ports) {
     if (com == '...')  {
       closePort()
       disableInputs(true)
-      displayValues(['', '', '', ''])     
+      clearValues()
     } else {
       initPort(com)
       disableInputs(false)
@@ -181,7 +176,10 @@ function initPort(com) {
   text.on('data', onData)
 }
 
+var lastDataTime = Date.now()
+
 function onData(data) {
+  lastDataTime = Date.now()
   //console.log(data)
   var ch = data.charAt(0);
   if (ch != '#') {
@@ -209,6 +207,10 @@ function onData(data) {
   haat2Button.style['background-color'] = color    
 }
 
+function clearValues() {
+  displayValues(['', '', '', '']) 
+}
+
 function displayValues(values) {
   t1 = values[0]
   t2 = values[1]
@@ -221,26 +223,50 @@ function displayValues(values) {
   pressDisplay.textContent = p
 }
 
+var timerId
+const CHART_UPDATE_INTERVAL = 5000
+
+function onTick() {
+  if (!serialport)
+    return
+
+  if (Date.now() - lastDataTime > CHART_UPDATE_INTERVAL) {
+    closePort()
+    disableInputs(true)
+    clearValues()
+    alert('Disconnected')
+  } else
+    nextValue()
+}
+
 function startDisplay() {
-  start()
+  if (timerId) 
+    return
+
+  nextValue()
+  timerId = setInterval(onTick, CHART_UPDATE_INTERVAL);
+
   startButton.disabled = true
   stopButton.disabled = false
   portsSelect.disabled = true
 }
 
 function stopDisplay() {
-  if (timerId) {
-    temp1.length = 0
-    temp2.length = 0
-    press.length = 0
-    for (i = 0; i < labels.length; i++)
-      labels[i] = i
-    clearInterval(timerId) 
-    timerId = undefined
-    startButton.disabled = false
-    stopButton.disabled = true
-    portsSelect.disabled = false
-  }
+  if (!timerId) 
+    return
+
+  clearInterval(timerId) 
+  timerId = undefined
+  
+  temp1.length = 0
+  temp2.length = 0
+  press.length = 0
+  
+  initLabels() 
+  
+  startButton.disabled = false
+  stopButton.disabled = true
+  portsSelect.disabled = false  
 }
 
 var heating1 = false, heating2 = false;
